@@ -7,59 +7,66 @@
 
 makeCacheMatrix <- function(x = matrix())
 {
-  ## Note that we set by default the inverse
-  ## to be the 0 matrix for easy testing of changes
-  ## since we assume the matrix to be invertible
-  dm <- dim(x)
-  xinv <- matrix(numeric(dm^2, dm, dm))
+  ## Set the default inverse to just be a NULL value
+  ## to serve as a test case for matrix changes
+  xinv <- NULL
   
+  ## Set the the matrix passed in
   set <- function(y)
   {
     x <<- y
     xinv <<- NULL
   }
   
+  ## Get the matrix we are working with
   get <- function()
   {
     x
   }
   
+  ## Set the inverse of the matrix we are working with
   setinv <- function(inv)
   {
     xinv <<- inv
   }
   
+  ## Get the inverse of the matrix we are working with
   getinv <- function()
   {
     xinv
   }
   
+  ## Return the list of relevant values
   list(set = set, get = get, setinv = setinv, getinv = getinv)
 }
 
 
-## Write a short comment describing this function
+## cacheSolve computes the inverse of the matrix of interest
+## but if it has been solved previously, it uses the cached value
 
 cacheSolve <- function(x, ...)
 {
   ## Return a matrix that is the inverse of 'x'
   ## Use the cached value if the matrix has not changed
-  ## Note that we test against a default of a zero matrix
-  ## to verify whether a solve should be invoked
   xinv <- x$getinv()
   
-  if(!(det(xinv) == 0))
+  ## If the inverse is already known, just return it
+  if(!is.null(xinv))
   {
     message("Getting cached data")
     
     return(xinv)
   }
   
+  ## Otherwise, get the matrix of interest
   data <- x$get()
   
-  minv <- solve(data)
+  ## Then solve for the inverse
+  xinv <- solve(data)
   
+  ## Set the inverse for the matrix of interest
   x$setinv(xinv)
   
+  ## Return the new inverse
   xinv
 }
